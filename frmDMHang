@@ -1,0 +1,35 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+
+namespace ViduKetnoiCSDL
+{
+    public partial class frmDMHang : Form
+    {
+        public frmDMHang()
+        {
+            InitializeComponent();
+        }
+
+        private void frmDMHang_Load(object sender, EventArgs e)
+        {
+            string sql = "Select machatlieu, tenchatlieu from ChatLieu";
+            Database.FillDataToCombo(sql, cboMachatlieu, "machatlieu", "tenchatlieu");
+            LoadDMHang();
+        }
+        Database dt = new Database();
+        private void LoadDMHang()
+        {
+            string sql1 = "select mahang,tenhang, machatlieu, soluong, Dongianhap, Dongiaban from HangHoa";
+            dgvHang.DataSource = dt.LoadDataToTable(sql1);
+            //HangHoa(mahang,tenhang, machatlieu, soluong, Dongianhap, Dongiaban, Anh, Ghichu) 
+          //  dgvHang.DataSource = dt;
+
+        }
+    }
+}
