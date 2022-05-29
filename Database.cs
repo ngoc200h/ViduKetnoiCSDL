@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -9,7 +9,7 @@ using System.Data.SqlClient;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace ViduKetnoiCSDL
+namespace ViduKetnoiCSDL.Class
 {
     class Database
     {
@@ -33,7 +33,18 @@ namespace ViduKetnoiCSDL
             { MessageBox.Show(ex.ToString());
             }
         }
-        public DataTable LoadDataToTable(string sql) //LoadDataTable
+
+        public static void Disconnect()
+        {
+            if (Conn.State == ConnectionState.Open)
+            {
+                Conn.Close();   	//Đóng kết nối
+                Conn.Dispose();     //Giải phóng tài nguyên
+                Conn = null;
+            }
+        }
+
+        public static DataTable LoadDataToTable(string sql) //LoadDataTable hoặc GetDataToTable
         {
             SqlDataAdapter Mydata = new SqlDataAdapter();	// Khai báo
             // Tạo đối tượng Command thực hiện câu lệnh SELECT        
@@ -56,16 +67,17 @@ namespace ViduKetnoiCSDL
             cbo.DisplayMember = ten;    // Truong hien thi
         }
 
-        //public static bool CheckKey(string sql)
-        //{
-        //    SqlConnection con = TaoKetNoi();
-        //    SqlCommand myCommand = new SqlCommand(sql, con);
-        //    SqlDataReader myReader = myCommand.ExecuteReader();
-        //    if (myReader.HasRows)
-        //        return true;
-        //    else
-        //        return false;
-        //}
+        public static bool CheckKey(string sql)
+        {
+            SqlDataAdapter Mydata = new SqlDataAdapter(sql, Conn);
+            DataTable table = new DataTable();
+            Mydata.Fill(table);
+            if (table.Rows.Count > 0)
+                return true;
+            else
+                return false;
+        }
+
 
         public void ExcuteNonQuery(string sql)
         {
@@ -76,6 +88,55 @@ namespace ViduKetnoiCSDL
             //con.Close();
             cmd.Dispose();
         }
+
+        public static void RunSql(string sql)
+        {
+            SqlCommand cmd;		                // Khai báo đối tượng SqlCommand
+            cmd = new SqlCommand();	         // Khởi tạo đối tượng
+            cmd.Connection = Class.Database.Conn;	  // Gán kết nối
+            cmd.CommandText = sql;			  // Gán câu lệnh SQL
+            try
+            {
+                cmd.ExecuteNonQuery();		  // Thực hiện câu lệnh SQL
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            cmd.Dispose();
+            cmd = null;
+        }
+
+        public static void RunSqlDel(string sql)
+        {
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = Class.Database.Conn;
+            cmd.CommandText = sql;
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch (System.Exception)
+            {
+                MessageBox.Show("Dữ liệu đang được dùng, không thể xóa...", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            }
+            cmd.Dispose();
+            cmd = null;
+        }
+        public static string GetFieldValues(string sql)
+        {
+            string ma = "";
+            SqlCommand cmd = new SqlCommand(sql, Class.Database.Conn);
+            SqlDataReader reader;
+            reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                ma = reader.GetValue(0).ToString();
+            }
+            reader.Close();
+            return ma;
+        }
+
 
     }
 }
