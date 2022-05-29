@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -19,13 +19,17 @@ namespace ViduKetnoiCSDL
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
-            Database.Connect();       
+            Class.Database.Connect();       
         }
-
+        private void thoatToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Class.Database.Disconnect();
+            Application.Exit();
+        }
         private void chatLieuToolStripMenuItem_Click(object sender, EventArgs e)
         {
             frmChatLieu f = new frmChatLieu();
+            f.StartPosition = FormStartPosition.CenterScreen;
             f.Show();
         }
 
@@ -34,5 +38,7 @@ namespace ViduKetnoiCSDL
             frmDMHang f = new frmDMHang();
             f.Show();
         }
+
+
     }
 }
